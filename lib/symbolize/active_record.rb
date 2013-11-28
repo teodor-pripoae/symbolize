@@ -70,9 +70,16 @@ module Symbolize::ActiveRecord
             values = enum
           else
             values = ActiveSupport::OrderedHash.new
+            ordered_values = enum.map { |v| [v.to_s.humanize, v] }
+
             enum.map do |val|
               key = val.respond_to?(:to_sym) ? val.to_sym : val
               values[key] = capitalize ? val.to_s.capitalize : val.to_s
+            end
+
+            # For ordered enumeration (Array), provide options
+            attr_names.each do |attr_name|
+              class_eval("#{attr_name.to_s.upcase}_OPTIONS = ordered_values")
             end
           end
 
